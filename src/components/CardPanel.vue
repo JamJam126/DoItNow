@@ -27,6 +27,18 @@ function remove() {
   emit('close')
 }
 
+const { offset, isSwiping, onTouchStart, onTouchMove, onTouchEnd } = useSwipeToClose(() => emit('close'))
+
+const panelStyle = computed(() => ({
+  translate:   offset.value ? `${offset.value}px 0` : undefined,
+  transition:  isSwiping.value ? 'none' : undefined,
+}))
+
+const backdropStyle = computed(() => ({
+  opacity:     offset.value ? 1 - Math.min(offset.value / window.innerWidth, 1) : undefined,
+  transition:  isSwiping.value ? 'none' : undefined,
+}))
+
 function closeOnEscape(event: KeyboardEvent) {
   if (event.key === 'Escape') emit('close')
 }
@@ -38,13 +50,19 @@ onBeforeUnmount(() => window.removeEventListener('keydown', closeOnEscape))
 <template>
   <div class="fixed inset-0 z-50">
     <div
-      class="absolute inset-0 bg-black/60 transition-opacity starting:opacity-0"
+      class="absolute inset-0 bg-black/60 transition-opacity duration-200 starting:opacity-0"
+      :style="backdropStyle"
       @click="emit('close')"
     />
 
     <aside
       class="absolute inset-y-0 right-0 flex w-full max-w-md flex-col border-l bg-primary
              transition-transform duration-200 starting:translate-x-full"
+      :style="panelStyle"
+      @touchstart="onTouchStart"
+      @touchmove="onTouchMove"
+      @touchend="onTouchEnd"
+      @touchcancel="onTouchEnd"
     >
       <header class="flex h-14 shrink-0 items-center justify-between border-b pr-3 pl-6">
         <div class="flex items-center gap-0.5 font-mono text-xs text-text-sub">

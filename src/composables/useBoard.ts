@@ -2,9 +2,27 @@ import type { Board, Card, Column } from '#shared/types/board'
 
 type CardChanges = Partial<Pick<Card, 'title' | 'description'>>
 
-const board = ref<Board>(loadBoard() ?? structuredClone(sampleBoard))
+type Status = 'loading' | 'ready' | 'error'
 
-watch(board, () => saveBoard(board.value), { deep: true })
+const board = ref<Board>({ version: 1, name: '', columns: [] })
+const status = ref<Status>('loading')
+
+let saveTimer: ReturnType<typeof setTimeout> | undefined
+
+function saveSoon() {
+  clearTimeout(saveTimer)
+  saveTimer = setTimeout(() => saveBoard(board.value), 400)
+}
+
+fetchBoard()
+  .then((loaded) => {
+    board.value = loaded
+    status.value = 'ready'
+    watch(board, saveSoon, { deep: true })
+  })
+  .catch(() => {
+    status.value = 'error'
+  })
 
 const doneColumn = computed(() => board.value.columns.find((column) => column.isDone))
 
@@ -91,6 +109,7 @@ function setDoneColumn(columnId: string | null) {
 export function useBoard() {
   return {
     board,
+    status,
     doneColumn,
     findCard,
     addCard,

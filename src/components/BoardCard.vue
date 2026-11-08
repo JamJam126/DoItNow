@@ -12,7 +12,7 @@ defineEmits<{ open: [] }>()
 <template>
   <button
     type="button"
-    class="flex w-full flex-col gap-1 rounded-md border bg-hover/60 p-3 text-left
+    class="flex w-full cursor-grab flex-col gap-1 rounded-md border bg-hover/60 p-3 text-left
            transition hover:border-text-sub/30"
     :class="{ 'opacity-50 hover:opacity-100': done }"
     @click="$emit('open')"

@@ -47,12 +47,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', closeOnEscape))
              transition-transform duration-200 starting:translate-x-full"
     >
       <header class="flex h-14 shrink-0 items-center justify-between border-b pr-3 pl-6">
-        <span class="font-mono text-xs text-text-sub">
+        <div class="flex items-center gap-0.5 font-mono text-xs text-text-sub">
           in
-          <span :class="column.isDone ? 'text-success' : 'text-text'">
-            {{ column.title.toLowerCase() }}
-          </span>
-        </span>
+          <CardColumnPicker :card-id="card.id" :column="column" />
+        </div>
       </header>
 
       <div class="flex flex-1 flex-col gap-6 overflow-y-auto p-6">

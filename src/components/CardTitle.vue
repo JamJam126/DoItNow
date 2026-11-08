@@ -41,7 +41,7 @@ onMounted(fitHeightToText)
     rows="1"
     spellcheck="false"
     aria-label="Title"
-    class="-mx-3 resize-none overflow-hidden rounded-md border border-transparent bg-transparent
+    class="-mx-3 -mt-1.5 resize-none overflow-hidden rounded-md border border-transparent bg-transparent
            px-3 py-1.5 text-lg leading-snug font-semibold outline-none transition-colors
            hover:bg-hover focus:border-text-sub/50 focus:bg-transparent"
     @blur="save"

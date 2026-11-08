@@ -1,4 +1,4 @@
-import type { Board, Card } from '#shared/types/board'
+import type { Board, Card, Column } from '#shared/types/board'
 
 type CardChanges = Partial<Pick<Card, 'title' | 'description'>>
 
@@ -46,6 +46,24 @@ function deleteCard(cardId: string) {
   found.column.cards = found.column.cards.filter((card) => card.id !== cardId)
 }
 
+function moveCard(cardId: string, columnId: string) {
+  const found = findCard(cardId)
+  const target = findColumn(columnId)
+  if (!found || !target || found.column.id === target.id) return
+
+  found.column.cards = found.column.cards.filter((card) => card.id !== cardId)
+  target.cards.push(found.card)
+}
+
+function setCards(columnId: string, cards: Card[]) {
+  const column = findColumn(columnId)
+  if (column) column.cards = cards
+}
+
+function setColumns(columns: Column[]) {
+  board.value.columns = columns
+}
+
 function addColumn(title: string) {
   board.value.columns.push({ id: newId(), title, isDone: false, cards: [] })
 }
@@ -73,6 +91,9 @@ export function useBoard() {
     addCard,
     updateCard,
     deleteCard,
+    moveCard,
+    setCards,
+    setColumns,
     addColumn,
     renameColumn,
     deleteColumn,

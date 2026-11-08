@@ -1,14 +1,20 @@
 <script setup lang="ts">
 import type { Card, Column } from '#shared/types/board'
+import { VueDraggable } from 'vue-draggable-plus'
 
 const { column } = defineProps<{ column: Column }>()
 defineEmits<{ openCard: [card: Card] }>()
 
-const { renameColumn } = useBoard()
+const { renameColumn, setCards } = useBoard()
 
 const title = computed({
   get: () => column.title,
   set: (title) => renameColumn(column.id, title),
+})
+
+const cards = computed({
+  get: () => column.cards,
+  set: (cards) => setCards(column.id, cards),
 })
 
 const isAddingCard = ref(false)
@@ -16,9 +22,9 @@ const isAddingCard = ref(false)
 
 <template>
   <section
-    class="flex max-h-full w-72 max-w-[85vw] shrink-0 snap-start flex-col rounded-md border"
+    class="flex max-h-full w-72 max-w-[85vw] shrink-0 snap-start flex-col rounded-md border bg-primary"
   >
-    <header class="flex h-11 shrink-0 items-center gap-2 border-b pr-1.5 pl-3">
+    <header class="flex h-11 shrink-0 cursor-grab items-center gap-2 border-b pr-1.5 pl-3">
       <ColumnTitle v-model="title" :class="{ 'text-success': column.isDone }" />
 
       <span
@@ -31,11 +37,23 @@ const isAddingCard = ref(false)
       <ColumnMenu :column="column" />
     </header>
 
-    <ul class="flex min-h-0 flex-col gap-2 overflow-y-auto p-2">
+    <VueDraggable
+      v-model="cards"
+      tag="ul"
+      group="cards"
+      :animation="150"
+      :delay="150"
+      :delay-on-touch-only="true"
+      :force-fallback="true"
+      :fallback-on-body="true"
+      :empty-insert-threshold="32"
+      class="flex flex-col gap-2 overflow-y-auto"
+      :class="column.cards.length ? 'p-2' : 'pt-2'"
+    >
       <li v-for="card in column.cards" :key="card.id">
         <BoardCard :card="card" :done="column.isDone" @open="$emit('openCard', card)" />
       </li>
-    </ul>
+    </VueDraggable>
 
     <div class="shrink-0 p-2 pt-0">
       <AddCardForm v-if="isAddingCard" :column-id="column.id" @close="isAddingCard = false" />

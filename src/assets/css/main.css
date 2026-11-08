@@ -1,0 +1,51 @@
+@import 'tailwindcss';
+
+/* Shared palette — same values as the portfolio. */
+:root {
+  --primary: #0a0a0a;
+  --hover: #1a1a1a;
+  --focus: #1d1d1d;
+  --border: #262626;
+  --text: #fafafa;
+  --text-sub: #b3b3b3;
+
+  --success: #4ade80;
+  --error: #f87171;
+}
+
+@theme inline {
+  --color-primary: var(--primary);
+  --color-hover: var(--hover);
+  --color-focus: var(--focus);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-text-sub: var(--text-sub);
+  --color-success: var(--success);
+  --color-error: var(--error);
+
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--border);
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--primary);
+    color: var(--text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--border);
+  }
+}

@@ -23,7 +23,7 @@ function remove() {
 </script>
 
 <template>
-  <div class="relative">
+  <div class="relative" data-no-drag>
     <UiButton variant="ghost" size="sm" aria-label="Column options" @click="isOpen = !isOpen">
       ⋯
     </UiButton>

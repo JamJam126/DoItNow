@@ -32,7 +32,7 @@ function closeCard() {
       <VueDraggable
         v-model="columns"
         handle="header"
-        filter="input, button"
+        filter="input, button, [data-no-drag]"
         :prevent-on-filter="false"
         :animation="150"
         :delay="150"

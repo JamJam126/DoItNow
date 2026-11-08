@@ -73,6 +73,11 @@ function renameColumn(columnId: string, title: string) {
   if (column) column.title = title
 }
 
+function toggleCollapsed(columnId: string) {
+  const column = findColumn(columnId)
+  if (column) column.isCollapsed = !column.isCollapsed
+}
+
 function deleteColumn(columnId: string) {
   board.value.columns = board.value.columns.filter((column) => column.id !== columnId)
 }
@@ -96,6 +101,7 @@ export function useBoard() {
     setColumns,
     addColumn,
     renameColumn,
+    toggleCollapsed,
     deleteColumn,
     setDoneColumn,
   }

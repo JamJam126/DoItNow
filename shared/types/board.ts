@@ -6,10 +6,11 @@ export interface Card {
 }
 
 export interface Column {
-  id:      string
-  title:   string
-  isDone:  boolean
-  cards:   Card[]
+  id:            string
+  title:         string
+  isDone:        boolean
+  isCollapsed?:  boolean
+  cards:         Card[]
 }
 
 export interface Board {

@@ -7,6 +7,7 @@ export const sampleBoard: Board = {
     {
       id: 'todo',
       title: 'To do',
+      isDone: false,
       cards: [
         {
           id: 'c1',
@@ -37,6 +38,7 @@ export const sampleBoard: Board = {
     {
       id: 'doing',
       title: 'Doing',
+      isDone: false,
       cards: [
         {
           id: 'c5',
@@ -49,6 +51,7 @@ export const sampleBoard: Board = {
     {
       id: 'done',
       title: 'Done',
+      isDone: true,
       cards: [
         {
           id: 'c6',

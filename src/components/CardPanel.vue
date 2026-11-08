@@ -1,15 +1,31 @@
 <script setup lang="ts">
-import type { Card } from '#shared/types/board'
+import type { Card, Column } from '#shared/types/board'
 
-const { card } = defineProps<{
-  card:         Card
-  columnTitle:  string
+const { card, column } = defineProps<{
+  card:    Card
+  column:  Column
 }>()
 
 const emit = defineEmits<{ close: [] }>()
 
-const title = ref(card.title)
-const description = ref(card.description)
+const { updateCard, deleteCard } = useBoard()
+
+const title = computed({
+  get: () => card.title,
+  set: (title) => updateCard(card.id, { title }),
+})
+
+const description = computed({
+  get: () => card.description,
+  set: (description) => updateCard(card.id, { description }),
+})
+
+function remove() {
+  if (!confirm(`Delete "${card.title}"?`)) return
+
+  deleteCard(card.id)
+  emit('close')
+}
 
 function closeOnEscape(event: KeyboardEvent) {
   if (event.key === 'Escape') emit('close')
@@ -32,36 +48,24 @@ onBeforeUnmount(() => window.removeEventListener('keydown', closeOnEscape))
     >
       <header class="flex h-14 shrink-0 items-center justify-between border-b pr-3 pl-6">
         <span class="font-mono text-xs text-text-sub">
-          in <span class="text-text">{{ columnTitle.toLowerCase() }}</span>
+          in
+          <span :class="column.isDone ? 'text-success' : 'text-text'">
+            {{ column.title.toLowerCase() }}
+          </span>
         </span>
       </header>
 
       <div class="flex flex-1 flex-col gap-6 overflow-y-auto p-6">
-        <input
-          v-model="title"
-          aria-label="Title"
-          class="w-full bg-transparent text-lg font-semibold outline-none"
-        />
+        <CardTitle v-model="title" />
 
-        <label class="flex flex-1 flex-col gap-2">
-          <span class="text-xs font-medium tracking-wide text-text-sub/70 uppercase">
-            Description
-          </span>
-          <textarea
-            v-model="description"
-            placeholder="Add more detail…"
-            class="min-h-40 flex-1 resize-none rounded-md border bg-transparent p-3
-                   text-sm leading-relaxed outline-none transition-colors
-                   placeholder:text-text-sub/40 focus:border-text-sub/50"
-          />
-        </label>
+        <CardDescription v-model="description" />
       </div>
 
       <footer class="flex h-14 shrink-0 items-center justify-between border-t pr-3 pl-6">
         <span class="font-mono text-xs text-text-sub/60">
           created {{ formatDate(card.createdAt) }}
         </span>
-        <UiButton variant="danger" size="sm">Delete card</UiButton>
+        <UiButton variant="danger" size="sm" @click="remove">Delete card</UiButton>
       </footer>
     </aside>
   </div>

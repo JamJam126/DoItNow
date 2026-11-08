@@ -1,8 +1,13 @@
 <script setup lang="ts">
-defineProps<{
-  boardName:  string
-  cardCount:  number
+const { cardCount, doneCount } = defineProps<{
+  boardName:   string
+  cardCount:   number
+  doneCount?:  number
 }>()
+
+const summary = computed(() =>
+  doneCount === undefined ? `${cardCount} cards` : `${doneCount}/${cardCount} done`,
+)
 </script>
 
 <template>
@@ -19,6 +24,6 @@ defineProps<{
       <span class="text-sm text-text-sub">{{ boardName }}</span>
     </div>
 
-    <span class="font-mono text-xs text-text-sub/60">{{ cardCount }} cards</span>
+    <span class="font-mono text-xs text-text-sub/60">{{ summary }}</span>
   </header>
 </template>

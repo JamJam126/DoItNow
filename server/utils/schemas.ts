@@ -9,7 +9,11 @@ export const idParamSchema = z.object({ id })
 
 export const idListSchema = z.object({ ids: z.array(id) })
 
-export const newColumnSchema = z.object({ id, title })
+export const newBoardSchema = z.object({ id, name: title })
+
+export const boardChangesSchema = z.object({ name: title })
+
+export const newColumnSchema = z.object({ id, boardId: id, title })
 
 export const columnChangesSchema = z.object({
   title:        title.optional(),

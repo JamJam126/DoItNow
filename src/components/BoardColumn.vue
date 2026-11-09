@@ -54,7 +54,7 @@ const isAddingCard = ref(false)
     class="flex max-h-full w-72 max-w-[85vw] shrink-0 snap-start flex-col rounded-md border bg-primary"
   >
     <header class="flex h-11 shrink-0 cursor-grab items-center gap-2 border-b pr-1.5 pl-3">
-      <ColumnTitle v-model="title" :class="{ 'text-success': column.isDone }" />
+      <InlineTitle v-model="title" label="Column title" :class="{ 'text-success': column.isDone }" />
 
       <span
         class="ml-auto font-mono text-xs"

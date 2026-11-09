@@ -1,77 +1,59 @@
 <script setup lang="ts">
-import type { Card } from '#shared/types/board'
-import { VueDraggable } from 'vue-draggable-plus'
+import type { BoardSummary } from '#shared/types/board'
 
-const { board, status, hasSaveError, load, doneColumn, findCard, setColumns } = useBoard()
-
-load()
-
-const columns = computed({
-  get: () => board.value.columns,
-  set: setColumns,
+const { data: boards, status, refresh } = await useFetch<BoardSummary[]>('/api/boards', {
+  default: () => [],
 })
 
-const cardCount = computed(() => board.value.columns.flatMap((column) => column.cards).length)
-const doneCount = computed(() => doneColumn.value?.cards.length)
+const actionError = ref('')
 
-const selectedCardId = ref<string | null>(null)
-const selected = computed(() => (selectedCardId.value ? findCard(selectedCardId.value) : undefined))
+async function createBoard(name: string) {
+  const id = crypto.randomUUID()
 
-function openCard(card: Card) {
-  selectedCardId.value = card.id
+  try {
+    await boardApi.createBoard(id, name)
+    await navigateTo(`/boards/${id}`)
+  } catch {
+    actionError.value = 'could not create the board'
+  }
 }
 
-function closeCard() {
-  selectedCardId.value = null
+async function deleteBoard(board: BoardSummary) {
+  const cards = board.cardCount ? ` and its ${board.cardCount} cards` : ''
+  if (!confirm(`Delete "${board.name}"${cards}?`)) return
+
+  try {
+    await boardApi.deleteBoard(board.id)
+    await refresh()
+  } catch {
+    actionError.value = 'could not delete the board'
+  }
 }
 </script>
 
 <template>
-  <div class="flex h-dvh flex-col">
-    <AppHeader
-      :board-name="board.name"
-      :card-count="cardCount"
-      :done-count="doneCount"
-      :has-save-error="hasSaveError"
-    />
+  <div class="flex min-h-dvh flex-col">
+    <AppHeader />
 
-    <p
-      v-if="status !== 'ready'"
-      class="grid flex-1 place-items-center font-mono text-xs text-text-sub/60"
-    >
-      {{ status === 'loading' ? 'loading board…' : 'could not load the board' }}
-    </p>
+    <main class="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-4 p-4 sm:p-6">
+      <div class="flex items-baseline justify-between">
+        <h1 class="text-sm font-medium">Boards</h1>
+        <span v-if="actionError" class="font-mono text-xs text-error">{{ actionError }}</span>
+      </div>
 
-    <main v-else class="flex min-h-0 flex-1 snap-x scroll-px-4 items-start gap-4 overflow-x-auto p-4 sm:scroll-px-6 sm:p-6">
-      <VueDraggable
-        v-model="columns"
-        handle="header"
-        filter="input, button, [data-no-drag]"
-        :prevent-on-filter="false"
-        :animation="150"
-        :delay="150"
-        :delay-on-touch-only="true"
-        :force-fallback="true"
-        :fallback-on-body="true"
-        class="flex items-start gap-4 self-stretch"
-      >
-        <BoardColumn
-          v-for="column in board.columns"
-          :key="column.id"
-          :column="column"
-          @open-card="openCard"
-        />
-      </VueDraggable>
+      <p v-if="status === 'pending'" class="font-mono text-xs text-text-sub/60">loading boards…</p>
+      <p v-else-if="status === 'error'" class="font-mono text-xs text-text-sub/60">
+        could not load boards
+      </p>
 
-      <AddColumnForm />
+      <ul v-else class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <li v-for="board in boards" :key="board.id">
+          <BoardTile :board="board" @delete="deleteBoard(board)" />
+        </li>
+        <li>
+          <AddBoardForm @create="createBoard" />
+        </li>
+      </ul>
     </main>
-
-    <CardPanel
-      v-if="selected"
-      :key="selected.card.id"
-      :card="selected.card"
-      :column="selected.column"
-      @close="closeCard"
-    />
   </div>
 </template>

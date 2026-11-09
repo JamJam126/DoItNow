@@ -22,3 +22,10 @@ export interface Board {
   name:     string
   columns:  Column[]
 }
+
+export interface BoardSummary {
+  id:         string
+  name:       string
+  cardCount:  number
+  doneCount:  number | null
+}

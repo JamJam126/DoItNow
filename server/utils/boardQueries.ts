@@ -1,4 +1,29 @@
-import type { Board, Card } from '#shared/types/board'
+import type { Board, BoardSummary, Card } from '#shared/types/board'
+
+export async function readBoards(): Promise<BoardSummary[]> {
+  const sql = useDb()
+
+  const rows = await sql`
+    select
+      boards.id,
+      boards.name,
+      count(cards.id)::int as card_count,
+      count(cards.id) filter (where columns.is_done)::int as done_count,
+      coalesce(bool_or(columns.is_done), false) as has_done_column
+    from boards
+    left join columns on columns.board_id = boards.id
+    left join cards on cards.column_id = columns.id
+    group by boards.id
+    order by boards.created_at
+  `
+
+  return rows.map((row) => ({
+    id:         row.id,
+    name:       row.name,
+    cardCount:  row.card_count,
+    doneCount:  row.has_done_column ? row.done_count : null,
+  }))
+}
 
 export async function readBoard(boardId: string): Promise<Board | undefined> {
   const sql = useDb()
@@ -41,28 +66,4 @@ export async function readBoard(boardId: string): Promise<Board | undefined> {
         })),
     })),
   }
-}
-
-export async function insertBoard(board: Board) {
-  const sql = useDb()
-
-  const columnInserts = board.columns.map((column, position) => sql`
-    insert into columns (id, board_id, title, position, is_done, is_collapsed)
-    values (${column.id}, ${board.id}, ${column.title}, ${position}, ${column.isDone}, ${column.isCollapsed ?? false})
-    on conflict (id) do nothing
-  `)
-
-  const cardInserts = board.columns.flatMap((column) =>
-    column.cards.map((card, position) => sql`
-      insert into cards (id, column_id, title, description, position, created_at)
-      values (${card.id}, ${column.id}, ${card.title}, ${card.description}, ${position}, ${card.createdAt})
-      on conflict (id) do nothing
-    `),
-  )
-
-  await sql.transaction([
-    sql`insert into boards (id, name) values (${board.id}, ${board.name}) on conflict (id) do nothing`,
-    ...columnInserts,
-    ...cardInserts,
-  ])
 }

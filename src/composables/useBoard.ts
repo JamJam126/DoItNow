@@ -1,6 +1,6 @@
 import type { Board, Card, CardChanges, Column, ColumnChanges } from '#shared/types/board'
 
-type Status = 'loading' | 'ready' | 'error'
+type Status = 'loading' | 'ready' | 'not-found' | 'error'
 
 const board = ref<Board>({ id: '', name: '', columns: [] })
 const status = ref<Status>('loading')
@@ -8,8 +8,12 @@ const hasSaveError = ref(false)
 
 let saving: Promise<unknown> = Promise.resolve()
 
+function statusCodeOf(error: unknown) {
+  return (error as { statusCode?: number }).statusCode
+}
+
 function isLoggedOut(error: unknown) {
-  return (error as { statusCode?: number }).statusCode === 401
+  return statusCodeOf(error) === 401
 }
 
 function goToLogin() {
@@ -25,16 +29,26 @@ function save(request: () => Promise<unknown>) {
   })
 }
 
-async function load() {
+async function load(boardId: string) {
   status.value = 'loading'
+  hasSaveError.value = false
 
   try {
-    board.value = await boardApi.load()
+    board.value = await boardApi.loadBoard(boardId)
     status.value = 'ready'
   } catch (error) {
     if (isLoggedOut(error)) return goToLogin()
-    status.value = 'error'
+    status.value = statusCodeOf(error) === 404 ? 'not-found' : 'error'
   }
+}
+
+function renameBoard(name: string) {
+  if (board.value.name === name) return
+
+  board.value.name = name
+
+  const boardId = board.value.id
+  save(() => boardApi.renameBoard(boardId, name))
 }
 
 const doneColumn = computed(() => board.value.columns.find((column) => column.isDone))
@@ -112,15 +126,18 @@ function setCards(columnId: string, cards: Card[]) {
 function setColumns(columns: Column[]) {
   board.value.columns = columns
 
+  const boardId = board.value.id
   const columnIds = idsOf(columns)
-  save(() => boardApi.saveColumnOrder(columnIds))
+  save(() => boardApi.saveColumnOrder(boardId, columnIds))
 }
 
 function addColumn(title: string) {
   const column: Column = { id: newId(), title, isDone: false, cards: [] }
 
   board.value.columns.push(column)
-  save(() => boardApi.addColumn(column.id, title))
+
+  const boardId = board.value.id
+  save(() => boardApi.addColumn(column.id, boardId, title))
 }
 
 function updateColumn(columnId: string, changes: ColumnChanges) {
@@ -162,6 +179,7 @@ export function useBoard() {
     status,
     hasSaveError,
     load,
+    renameBoard,
     doneColumn,
     findCard,
     addCard,

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { BoardSummary } from '#shared/types/board'
 
-const { data: boards, status, refresh } = await useFetch<BoardSummary[]>('/api/boards', {
+const { data: boards, status, refresh } = useLazyFetch<BoardSummary[]>('/api/boards', {
   default: () => [],
 })
 
@@ -41,7 +41,9 @@ async function deleteBoard(board: BoardSummary) {
         <span v-if="actionError" class="font-mono text-xs text-error">{{ actionError }}</span>
       </div>
 
-      <p v-if="status === 'pending'" class="font-mono text-xs text-text-sub/60">loading boards…</p>
+      <ul v-if="status === 'pending'" aria-busy="true" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <li v-for="tile in 3" :key="tile" class="h-28 animate-pulse rounded-md border bg-hover/40" />
+      </ul>
       <p v-else-if="status === 'error'" class="font-mono text-xs text-text-sub/60">
         could not load boards
       </p>

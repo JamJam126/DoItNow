@@ -30,11 +30,9 @@ const summary = computed(() =>
     : `${doneCount.value}/${cardCount.value} done`,
 )
 
-const statusMessage = computed(() => {
-  if (status.value === 'loading') return 'loading board…'
-  if (status.value === 'not-found') return 'this board does not exist'
-  return 'could not load the board'
-})
+const statusMessage = computed(() =>
+  status.value === 'not-found' ? 'this board does not exist' : 'could not load the board',
+)
 
 const selectedCardId = ref<string | null>(null)
 const selected = computed(() => (selectedCardId.value ? findCard(selectedCardId.value) : undefined))
@@ -55,8 +53,9 @@ function closeCard() {
 <template>
   <div class="flex h-dvh flex-col">
     <AppHeader>
-      <template v-if="status === 'ready'" #title>
-        <div class="flex min-w-0 items-center gap-0.5">
+      <template v-if="status === 'loading' || status === 'ready'" #title>
+        <div v-if="status === 'loading'" class="h-3.5 w-28 animate-pulse rounded bg-hover" />
+        <div v-else class="flex min-w-0 items-center gap-0.5">
           <InlineTitle
             v-model="name"
             label="Board name"
@@ -72,14 +71,17 @@ function closeCard() {
       <span v-else-if="status === 'ready'" class="font-mono text-xs text-text-sub/60">
         {{ summary }}
       </span>
+      <div v-else-if="status === 'loading'" class="h-3 w-16 animate-pulse rounded bg-hover" />
     </AppHeader>
 
+    <BoardSkeleton v-if="status === 'loading'" />
+
     <div
-      v-if="status !== 'ready'"
+      v-else-if="status !== 'ready'"
       class="flex flex-1 flex-col items-center justify-center gap-3 font-mono text-xs text-text-sub/60"
     >
       <p>{{ statusMessage }}</p>
-      <NuxtLink v-if="status !== 'loading'" to="/" class="text-text-sub underline hover:text-text">
+      <NuxtLink to="/" class="text-text-sub underline hover:text-text">
         back to boards
       </NuxtLink>
     </div>

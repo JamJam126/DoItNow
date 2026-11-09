@@ -33,8 +33,8 @@ function cancel() {
     v-model="draft"
     spellcheck="false"
     :aria-label="label"
-    class="-ml-1.5 w-28 min-w-0 rounded border border-transparent bg-transparent px-1.5 py-0.5
-           text-sm font-medium outline-none transition-colors field-sizing-content
+    class="-ml-1.5 min-w-0 max-w-full text-ellipsis rounded border border-transparent bg-transparent
+           px-1.5 py-0.5 text-sm font-medium outline-none transition-colors field-sizing-content
            hover:bg-hover focus:border-text-sub/50 focus:bg-transparent"
     @blur="save"
     @keydown.enter="input?.blur()"

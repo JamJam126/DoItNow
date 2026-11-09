@@ -8,11 +8,13 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "db:setup": "node --env-file=.env scripts/setupDatabase.mjs"
+    "db:setup": "node --env-file=.env scripts/setupDatabase.mjs",
+    "set-password": "node scripts/setPassword.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",
     "nuxt": "^4.6.4",
+    "nuxt-auth-utils": "^0.6.2",
     "vue": "^3.5.44",
     "vue-draggable-plus": "^0.6.1",
     "vue-router": "^5.4.0",
@@ -20,6 +22,7 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.5",
+    "@types/node": "^26.6.6",
     "tailwindcss": "^4.3.5",
     "typescript": "^6.0.3",
     "vue-tsc": "^3.3.14"

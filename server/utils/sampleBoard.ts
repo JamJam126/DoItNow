@@ -1,7 +1,7 @@
 import type { Board } from '#shared/types/board'
 
 export const sampleBoard: Board = {
-  version: 1,
+  id: defaultBoardId,
   name: 'My board',
   columns: [
     {

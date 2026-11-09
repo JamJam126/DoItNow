@@ -7,10 +7,16 @@ export default defineNuxtConfig({
   srcDir: 'src/',
   ssr: false,
 
+  modules: ['nuxt-auth-utils'],
+
   css: ['~/assets/css/main.css'],
 
   runtimeConfig: {
     databaseUrl: '',
+    loginPasswordHash: '',
+    session: {
+      maxAge: 60 * 60 * 24 * 30,
+    },
   },
 
   vite: {

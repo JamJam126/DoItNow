@@ -13,8 +13,12 @@ export interface Column {
   cards:         Card[]
 }
 
+export type CardChanges = Partial<Pick<Card, 'title' | 'description'>>
+
+export type ColumnChanges = Partial<Pick<Column, 'title' | 'isDone' | 'isCollapsed'>>
+
 export interface Board {
-  version:  1
+  id:       string
   name:     string
   columns:  Column[]
 }

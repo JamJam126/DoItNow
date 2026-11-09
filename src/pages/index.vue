@@ -2,7 +2,9 @@
 import type { Card } from '#shared/types/board'
 import { VueDraggable } from 'vue-draggable-plus'
 
-const { board, status, doneColumn, findCard, setColumns } = useBoard()
+const { board, status, hasSaveError, load, doneColumn, findCard, setColumns } = useBoard()
+
+load()
 
 const columns = computed({
   get: () => board.value.columns,
@@ -26,7 +28,12 @@ function closeCard() {
 
 <template>
   <div class="flex h-dvh flex-col">
-    <AppHeader :board-name="board.name" :card-count="cardCount" :done-count="doneCount" />
+    <AppHeader
+      :board-name="board.name"
+      :card-count="cardCount"
+      :done-count="doneCount"
+      :has-save-error="hasSaveError"
+    />
 
     <p
       v-if="status !== 'ready'"

@@ -8,7 +8,7 @@ const { variant = 'outline', size = 'md' } = defineProps<{
 }>()
 
 const variantClasses: Record<Variant, string> = {
-  solid:    'bg-text text-primary hover:bg-text/85',
+  solid:    'bg-accent text-on-accent hover:bg-accent/85',
   outline:  'border text-text hover:bg-hover',
   ghost:    'text-text-sub hover:bg-hover hover:text-text',
   danger:   'text-error hover:bg-error/10',

@@ -2,7 +2,7 @@ export type ThemePreference = 'system' | 'light' | 'dark'
 
 const storageKey = 'doitnow:theme'
 const lightQuery = '(prefers-color-scheme: light)'
-const themeColors = { light: '#ffffff', dark: '#0a0a0a' }
+const themeColors = { light: '#fdfee9', dark: '#0a0a0a' }
 
 function readPreference(): ThemePreference {
   const saved = readStorage(storageKey)

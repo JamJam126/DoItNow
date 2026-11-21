@@ -18,6 +18,9 @@ const cards = computed({
 })
 
 const isAddingCard = ref(false)
+
+const status = computed(() => statusOf(column))
+const accent = computed(() => (status.value === 'todo' ? '' : statusStyle[status.value]))
 </script>
 
 <template>
@@ -34,16 +37,10 @@ const isAddingCard = ref(false)
       @click="toggleCollapsed(column.id)"
       @keydown.enter="toggleCollapsed(column.id)"
     >
-      <span
-        class="font-mono text-xs"
-        :class="column.isDone ? 'text-success' : 'text-text-sub/60'"
-      >
+      <span class="font-mono text-xs" :class="accent || 'text-text-sub/60'">
         {{ column.cards.length }}
       </span>
-      <span
-        class="text-sm font-medium [writing-mode:vertical-rl]"
-        :class="{ 'text-success': column.isDone }"
-      >
+      <span class="text-sm font-medium [writing-mode:vertical-rl]" :class="accent">
         {{ column.title }}
       </span>
     </header>
@@ -54,12 +51,10 @@ const isAddingCard = ref(false)
     class="flex max-h-full w-72 max-w-[85vw] shrink-0 snap-start flex-col rounded-md border bg-primary"
   >
     <header class="flex h-11 shrink-0 cursor-grab items-center gap-2 border-b pr-1.5 pl-3">
-      <InlineTitle v-model="title" label="Column title" :class="{ 'text-success': column.isDone }" />
+      <StatusIcon v-if="status !== 'todo'" :status="status" :class="accent" />
+      <InlineTitle v-model="title" label="Column title" :class="accent" />
 
-      <span
-        class="ml-auto font-mono text-xs"
-        :class="column.isDone ? 'text-success' : 'text-text-sub/60'"
-      >
+      <span class="ml-auto font-mono text-xs" :class="accent || 'text-text-sub/60'">
         {{ column.cards.length }}
       </span>
 

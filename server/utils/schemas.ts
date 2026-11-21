@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { priorities } from '#shared/types/board'
 
 const id = z.string().min(1).max(100)
 const title = z.string().trim().min(1).max(500)
@@ -23,15 +24,29 @@ export const boardChangesSchema = z.object({ name: title })
 
 export const newColumnSchema = z.object({ id, boardId: id, title })
 
-export const columnChangesSchema = z.object({
-  title:        title.optional(),
-  isDone:       z.boolean().optional(),
-  isCollapsed:  z.boolean().optional(),
-})
+export const columnChangesSchema = z
+  .object({
+    title:         title.optional(),
+    isDone:        z.boolean().optional(),
+    isInProgress:  z.boolean().optional(),
+    isCollapsed:   z.boolean().optional(),
+  })
+  .refine((changes) => !(changes.isDone && changes.isInProgress), 'A column cannot be done and in progress')
 
-export const newCardSchema = z.object({ id, columnId: id, title })
+const priority = z.enum(priorities).nullable()
+const dueDate = z.iso.date().nullable()
+
+export const newCardSchema = z.object({
+  id,
+  columnId:  id,
+  title,
+  priority:  priority.optional(),
+  dueDate:   dueDate.optional(),
+})
 
 export const cardChangesSchema = z.object({
   title:        title.optional(),
   description:  z.string().max(20_000).optional(),
+  priority:     priority.optional(),
+  dueDate:      dueDate.optional(),
 })

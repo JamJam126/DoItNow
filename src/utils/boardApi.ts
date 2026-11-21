@@ -1,4 +1,4 @@
-import type { Board, BoardSummary, CardChanges, ColumnChanges } from '#shared/types/board'
+import type { Board, BoardSummary, CardChanges, ColumnChanges, NewCardDetails } from '#shared/types/board'
 
 export const boardApi = {
   listBoards() {
@@ -41,8 +41,8 @@ export const boardApi = {
     return $fetch(`/api/columns/${columnId}/cards`, { method: 'PUT', body: { ids: cardIds } })
   },
 
-  addCard(id: string, columnId: string, title: string) {
-    return $fetch('/api/cards', { method: 'POST', body: { id, columnId, title } })
+  addCard(id: string, columnId: string, title: string, details: NewCardDetails) {
+    return $fetch('/api/cards', { method: 'POST', body: { id, columnId, title, ...details } })
   },
 
   updateCard(id: string, changes: CardChanges) {

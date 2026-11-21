@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import type { Card } from '#shared/types/board'
 
-defineProps<{
+const { card, done } = defineProps<{
   card:  Card
   done:  boolean
 }>()
+
+const dueClass = computed(() => (card.dueDate ? dueStyle[dueStateOf(card.dueDate, done)] : ''))
 
 defineEmits<{ open: [] }>()
 </script>
@@ -20,6 +22,20 @@ defineEmits<{ open: [] }>()
     <span class="text-sm">{{ card.title }}</span>
     <span v-if="card.description" class="line-clamp-2 text-xs leading-relaxed text-text-sub">
       {{ card.description }}
+    </span>
+
+    <span v-if="card.priority || card.dueDate" class="mt-1 flex flex-wrap items-center gap-2 font-mono text-[11px]">
+      <span v-if="card.priority" class="rounded border px-1.5 capitalize" :class="priorityStyle[card.priority]">
+        {{ card.priority }}
+      </span>
+      <span v-if="card.dueDate" class="flex items-center gap-1" :class="dueClass">
+        <svg viewBox="0 0 24 24" class="size-3" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="5" width="18" height="16" rx="2" />
+          <path d="M16 3v4M8 3v4M3 10h18" />
+        </svg>
+        {{ formatDueDate(card.dueDate) }}
+      </span>
     </span>
   </button>
 </template>

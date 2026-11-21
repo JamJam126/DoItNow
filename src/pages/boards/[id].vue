@@ -6,8 +6,9 @@ definePageMeta({ key: (route) => route.fullPath })
 
 const route = useRoute()
 const boardId = route.params.id as string
+const view = useBoardView(boardId)
 
-const { board, status, hasSaveError, load, renameBoard, doneColumn, findCard, setColumns } = useBoard()
+const { board, status, hasSaveError, load, renameBoard, doneColumn, inProgressColumn, findCard, setColumns } = useBoard()
 
 load(boardId)
 
@@ -23,6 +24,7 @@ const columns = computed({
 
 const cardCount = computed(() => board.value.columns.flatMap((column) => column.cards).length)
 const doneCount = computed(() => doneColumn.value?.cards.length)
+const inProgressCount = computed(() => inProgressColumn.value?.cards.length)
 
 const summary = computed(() =>
   doneCount.value === undefined
@@ -65,13 +67,20 @@ function closeCard() {
         </div>
       </template>
 
+      <template v-if="status === 'ready'" #center>
+        <BoardViewSwitch v-model="view" />
+      </template>
+
       <span v-if="hasSaveError" class="font-mono text-xs text-error">
         changes not saved · reload
       </span>
-      <span v-else-if="status === 'ready'" class="font-mono text-xs text-text-sub/60">
+      <span v-else-if="status === 'ready'" class="hidden font-mono text-xs text-text-sub/60 sm:inline">
+        <span v-if="inProgressCount !== undefined">
+          <span class="text-info">{{ inProgressCount }} in progress</span> ·
+        </span>
         {{ summary }}
       </span>
-      <div v-else-if="status === 'loading'" class="h-3 w-16 animate-pulse rounded bg-hover" />
+      <div v-else-if="status === 'loading'" class="hidden h-3 w-16 animate-pulse rounded bg-hover sm:block" />
     </AppHeader>
 
     <BoardSkeleton v-if="status === 'loading'" />
@@ -87,7 +96,7 @@ function closeCard() {
     </div>
 
     <main
-      v-else
+      v-else-if="view === 'board'"
       class="flex min-h-0 flex-1 snap-x scroll-px-4 items-start gap-4 overflow-x-auto p-4
              sm:scroll-px-6 sm:p-6"
     >
@@ -112,6 +121,10 @@ function closeCard() {
       </VueDraggable>
 
       <AddColumnForm />
+    </main>
+
+    <main v-else class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
+      <CardTable @open-card="openCard" />
     </main>
 
     <CardPanel

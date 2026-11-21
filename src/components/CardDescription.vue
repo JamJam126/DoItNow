@@ -56,7 +56,7 @@ function cancel() {
     <button
       v-else
       type="button"
-      class="-mx-3 rounded-md border border-transparent p-3 text-left text-sm leading-relaxed
+      class="-mx-3 cursor-pointer rounded-md border border-transparent p-3 text-left text-sm leading-relaxed
              transition-colors hover:bg-hover"
       @click="startEditing"
     >

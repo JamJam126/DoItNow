@@ -32,6 +32,11 @@ create table if not exists cards (
   created_at   timestamptz not null default now()
 );
 
+alter table columns add column if not exists is_in_progress boolean not null default false;
+
+alter table cards add column if not exists priority text check (priority in ('low', 'medium', 'high', 'urgent'));
+alter table cards add column if not exists due_date date;
+
 create index if not exists boards_owner_id_idx on boards (owner_id);
 create index if not exists columns_board_id_idx on columns (board_id);
 create index if not exists cards_column_id_idx on cards (column_id);

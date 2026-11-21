@@ -20,6 +20,18 @@ const description = computed({
   set: (description) => updateCard(card.id, { description }),
 })
 
+const priority = computed({
+  get: () => card.priority,
+  set: (priority) => updateCard(card.id, { priority }),
+})
+
+const status = computed(() => statusOf(column))
+
+const dueDate = computed({
+  get: () => card.dueDate,
+  set: (dueDate) => updateCard(card.id, { dueDate }),
+})
+
 function remove() {
   if (!confirm(`Delete "${card.title}"?`)) return
 
@@ -64,15 +76,32 @@ onBeforeUnmount(() => window.removeEventListener('keydown', closeOnEscape))
       @touchend="onTouchEnd"
       @touchcancel="onTouchEnd"
     >
-      <header class="flex h-14 shrink-0 items-center justify-between border-b pr-3 pl-6">
-        <div class="flex items-center gap-0.5 font-mono text-xs text-text-sub">
+      <header class="flex h-14 shrink-0 items-center justify-between gap-3 border-b px-6">
+        <div class="flex min-w-0 items-center gap-0.5 font-mono text-xs text-text-sub">
           in
           <CardColumnPicker :card-id="card.id" :column="column" />
         </div>
+
+        <span class="flex shrink-0 items-center gap-1.5 font-mono text-xs" :class="statusStyle[status]">
+          <StatusIcon :status="status" />
+          {{ statusLabel[status].toLowerCase() }}
+        </span>
       </header>
 
       <div class="flex flex-1 flex-col gap-6 overflow-y-auto p-6">
         <CardTitle v-model="title" />
+
+        <section class="flex flex-col gap-3">
+          <div class="flex items-center gap-3">
+            <h3 class="w-16 shrink-0 text-xs font-medium tracking-wide text-text-sub/70 uppercase">Priority</h3>
+            <CardPriority v-model="priority" />
+          </div>
+
+          <div class="flex items-center gap-3">
+            <h3 class="w-16 shrink-0 text-xs font-medium tracking-wide text-text-sub/70 uppercase">Due</h3>
+            <CardDueDate v-model="dueDate" :done="column.isDone" />
+          </div>
+        </section>
 
         <CardDescription v-model="description" />
       </div>

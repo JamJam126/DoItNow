@@ -41,7 +41,7 @@ function add() {
     <button
       v-else
       type="button"
-      class="flex h-11 w-full items-center rounded-md border border-dashed px-3 text-sm
+      class="flex h-11 w-full cursor-pointer items-center rounded-md border border-dashed px-3 text-sm
              text-text-sub transition-colors hover:bg-hover hover:text-text"
       @click="open"
     >

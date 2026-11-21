@@ -23,7 +23,7 @@ function moveTo(columnId: string) {
       aria-haspopup="listbox"
       :aria-expanded="isOpen"
       class="flex cursor-pointer items-center gap-1 rounded px-1.5 py-0.5 transition-colors hover:bg-hover"
-      :class="column.isDone ? 'text-success' : 'text-text'"
+      :class="statusOf(column) === 'todo' ? 'text-text' : statusStyle[statusOf(column)]"
       @click="isOpen = !isOpen"
     >
       {{ column.title.toLowerCase() }}
@@ -45,11 +45,9 @@ function moveTo(columnId: string) {
             :aria-selected="option.id === column.id"
             class="flex w-full cursor-pointer items-center justify-between rounded px-2 py-1.5 text-left text-sm
                    transition-colors hover:bg-hover"
-            :class="{
-              'text-success': option.isDone,
-              'text-text': !option.isDone && option.id === column.id,
-              'text-text-sub hover:text-text': !option.isDone && option.id !== column.id,
-            }"
+            :class="statusOf(option) !== 'todo'
+              ? statusStyle[statusOf(option)]
+              : option.id === column.id ? 'text-text' : 'text-text-sub hover:text-text'"
             @click="moveTo(option.id)"
           >
             {{ option.title }}

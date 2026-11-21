@@ -10,9 +10,9 @@ const summary = computed(() =>
     : `${board.doneCount}/${board.cardCount} done`,
 )
 
-const donePercent = computed(() =>
-  board.doneCount && board.cardCount ? (board.doneCount / board.cardCount) * 100 : 0,
-)
+function percentOf(count: number | null) {
+  return count && board.cardCount ? (count / board.cardCount) * 100 : 0
+}
 </script>
 
 <template>
@@ -25,9 +25,13 @@ const donePercent = computed(() =>
       <span class="line-clamp-2 pr-8 text-sm font-medium">{{ board.name }}</span>
 
       <div class="flex flex-col gap-2">
-        <span class="font-mono text-xs text-text-sub/60">{{ summary }}</span>
-        <div v-if="board.doneCount !== null" class="h-0.5 overflow-hidden rounded-full bg-border">
-          <div class="h-full bg-success" :style="{ width: `${donePercent}%` }" />
+        <span class="font-mono text-xs text-text-sub/60">
+          <span v-if="board.inProgressCount" class="text-info">{{ board.inProgressCount }} in progress · </span>
+          {{ summary }}
+        </span>
+        <div v-if="board.doneCount !== null" class="flex h-0.5 overflow-hidden rounded-full bg-border">
+          <div class="h-full bg-success" :style="{ width: `${percentOf(board.doneCount)}%` }" />
+          <div class="h-full bg-info" :style="{ width: `${percentOf(board.inProgressCount)}%` }" />
         </div>
       </div>
     </NuxtLink>

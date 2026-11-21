@@ -1,6 +1,9 @@
-import type { Board, Card, CardChanges, Column, ColumnChanges } from '#shared/types/board'
+import type { Board, Card, CardChanges, Column, ColumnChanges, NewCardDetails } from '#shared/types/board'
 
 type Status = 'loading' | 'ready' | 'not-found' | 'error'
+type ColumnRole = 'isDone' | 'isInProgress'
+
+const otherRole: Record<ColumnRole, ColumnRole> = { isDone: 'isInProgress', isInProgress: 'isDone' }
 
 const board = ref<Board>({ id: '', name: '', columns: [] })
 const status = ref<Status>('loading')
@@ -52,6 +55,7 @@ function renameBoard(name: string) {
 }
 
 const doneColumn = computed(() => board.value.columns.find((column) => column.isDone))
+const inProgressColumn = computed(() => board.value.columns.find((column) => column.isInProgress))
 
 function newId() {
   return crypto.randomUUID()
@@ -78,11 +82,19 @@ function findCard(cardId: string) {
   return undefined
 }
 
-function addCard(columnId: string, title: string) {
-  const card: Card = { id: newId(), title, description: '', createdAt: new Date().toISOString() }
+const noDetails: NewCardDetails = { priority: null, dueDate: null }
+
+function addCard(columnId: string, title: string, details = noDetails) {
+  const card: Card = {
+    id:           newId(),
+    title,
+    description:  '',
+    ...details,
+    createdAt:    new Date().toISOString(),
+  }
 
   findColumn(columnId)?.cards.push(card)
-  save(() => boardApi.addCard(card.id, columnId, title))
+  save(() => boardApi.addCard(card.id, columnId, title, details))
 }
 
 function updateCard(cardId: string, changes: CardChanges) {
@@ -132,7 +144,7 @@ function setColumns(columns: Column[]) {
 }
 
 function addColumn(title: string) {
-  const column: Column = { id: newId(), title, isDone: false, cards: [] }
+  const column: Column = { id: newId(), title, isDone: false, isInProgress: false, cards: [] }
 
   board.value.columns.push(column)
 
@@ -157,15 +169,24 @@ function toggleCollapsed(columnId: string) {
   if (column) updateColumn(columnId, { isCollapsed: !column.isCollapsed })
 }
 
-function setDoneColumn(columnId: string | null) {
-  const previous = doneColumn.value
+function setColumnRole(role: ColumnRole, columnId: string | null) {
+  const previous = board.value.columns.find((column) => column[role])
 
   for (const column of board.value.columns) {
-    column.isDone = column.id === columnId
+    column[role] = column.id === columnId
+    if (column[role]) column[otherRole[role]] = false
   }
 
-  if (columnId) save(() => boardApi.updateColumn(columnId, { isDone: true }))
-  else if (previous) save(() => boardApi.updateColumn(previous.id, { isDone: false }))
+  if (columnId) save(() => boardApi.updateColumn(columnId, { [role]: true }))
+  else if (previous) save(() => boardApi.updateColumn(previous.id, { [role]: false }))
+}
+
+function setDoneColumn(columnId: string | null) {
+  setColumnRole('isDone', columnId)
+}
+
+function setInProgressColumn(columnId: string | null) {
+  setColumnRole('isInProgress', columnId)
 }
 
 function deleteColumn(columnId: string) {
@@ -181,6 +202,7 @@ export function useBoard() {
     load,
     renameBoard,
     doneColumn,
+    inProgressColumn,
     findCard,
     addCard,
     updateCard,
@@ -192,6 +214,7 @@ export function useBoard() {
     renameColumn,
     toggleCollapsed,
     setDoneColumn,
+    setInProgressColumn,
     deleteColumn,
   }
 }

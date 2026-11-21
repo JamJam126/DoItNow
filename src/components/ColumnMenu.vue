@@ -3,12 +3,17 @@ import type { Column } from '#shared/types/board'
 
 const { column } = defineProps<{ column: Column }>()
 
-const { setDoneColumn, deleteColumn } = useBoard()
+const { setDoneColumn, setInProgressColumn, deleteColumn } = useBoard()
 
 const isOpen = ref(false)
 
 function toggleDone() {
   setDoneColumn(column.isDone ? null : column.id)
+  isOpen.value = false
+}
+
+function toggleInProgress() {
+  setInProgressColumn(column.isInProgress ? null : column.id)
   isOpen.value = false
 }
 
@@ -32,12 +37,12 @@ function remove() {
       <div class="fixed inset-0 z-10" @click="isOpen = false" />
 
       <div
-        class="absolute top-full right-0 z-20 mt-1 flex w-48 flex-col rounded-md border bg-primary p-1
+        class="absolute top-full right-0 z-20 mt-1 flex w-56 flex-col rounded-md border bg-primary p-1
                shadow-lg shadow-black/40 transition starting:-translate-y-1 starting:opacity-0"
       >
         <button
           type="button"
-          class="rounded px-2 py-1.5 text-left text-sm text-text-sub
+          class="cursor-pointer rounded px-2 py-1.5 text-left text-sm text-text-sub
                  transition-colors hover:bg-hover hover:text-text"
           @click="toggleDone"
         >
@@ -46,7 +51,16 @@ function remove() {
 
         <button
           type="button"
-          class="rounded px-2 py-1.5 text-left text-sm text-error
+          class="cursor-pointer rounded px-2 py-1.5 text-left text-sm text-text-sub
+                 transition-colors hover:bg-hover hover:text-text"
+          @click="toggleInProgress"
+        >
+          {{ column.isInProgress ? 'Unmark in progress column' : 'Mark as in progress column' }}
+        </button>
+
+        <button
+          type="button"
+          class="cursor-pointer rounded px-2 py-1.5 text-left text-sm text-error
                  transition-colors hover:bg-error/10"
           @click="remove"
         >

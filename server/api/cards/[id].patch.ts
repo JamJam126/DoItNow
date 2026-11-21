@@ -7,7 +7,11 @@ export default defineEventHandler(async (event) => {
   const [card] = await sql`
     update cards
     set title        = coalesce(${changes.title ?? null}, title),
-        description  = coalesce(${changes.description ?? null}, description)
+        description  = coalesce(${changes.description ?? null}, description),
+        priority     = case when ${changes.priority !== undefined}::boolean
+                         then ${changes.priority ?? null}::text else priority end,
+        due_date     = case when ${changes.dueDate !== undefined}::boolean
+                         then ${changes.dueDate ?? null}::date else due_date end
     where id = ${id}
       and column_id in (
         select columns.id

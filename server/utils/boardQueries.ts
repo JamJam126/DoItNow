@@ -9,7 +9,9 @@ export async function readBoards(userId: string): Promise<BoardSummary[]> {
       boards.name,
       count(cards.id)::int as card_count,
       count(cards.id) filter (where columns.is_done)::int as done_count,
-      coalesce(bool_or(columns.is_done), false) as has_done_column
+      count(cards.id) filter (where columns.is_in_progress)::int as in_progress_count,
+      coalesce(bool_or(columns.is_done), false) as has_done_column,
+      coalesce(bool_or(columns.is_in_progress), false) as has_in_progress_column
     from boards
     left join columns on columns.board_id = boards.id
     left join cards on cards.column_id = columns.id
@@ -19,10 +21,11 @@ export async function readBoards(userId: string): Promise<BoardSummary[]> {
   `
 
   return rows.map((row) => ({
-    id:         row.id,
-    name:       row.name,
-    cardCount:  row.card_count,
-    doneCount:  row.has_done_column ? row.done_count : null,
+    id:               row.id,
+    name:             row.name,
+    cardCount:        row.card_count,
+    doneCount:        row.has_done_column ? row.done_count : null,
+    inProgressCount:  row.has_in_progress_column ? row.in_progress_count : null,
   }))
 }
 
@@ -32,13 +35,15 @@ export async function readBoard(boardId: string, userId: string): Promise<Board 
   const [boards = [], columns = [], cards = []] = await sql.transaction([
     sql`select id, name from boards where id = ${boardId} and owner_id = ${userId}`,
     sql`
-      select id, title, is_done, is_collapsed
+      select id, title, is_done, is_in_progress, is_collapsed
       from columns
       where board_id = ${boardId}
       order by position
     `,
     sql`
-      select cards.id, cards.column_id, cards.title, cards.description, cards.created_at
+      select
+        cards.id, cards.column_id, cards.title, cards.description,
+        cards.priority, cards.due_date::text as due_date, cards.created_at
       from cards
       join columns on columns.id = cards.column_id
       where columns.board_id = ${boardId}
@@ -55,14 +60,17 @@ export async function readBoard(boardId: string, userId: string): Promise<Board 
     columns:  columns.map((column) => ({
       id:           column.id,
       title:        column.title,
-      isDone:       column.is_done,
-      isCollapsed:  column.is_collapsed,
+      isDone:        column.is_done,
+      isInProgress:  column.is_in_progress,
+      isCollapsed:   column.is_collapsed,
       cards:        cards
         .filter((card) => card.column_id === column.id)
         .map((card): Card => ({
           id:           card.id,
           title:        card.title,
           description:  card.description,
+          priority:     card.priority,
+          dueDate:      card.due_date,
           createdAt:    new Date(card.created_at).toISOString(),
         })),
     })),

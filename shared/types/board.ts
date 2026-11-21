@@ -2,6 +2,12 @@ export const priorities = ['low', 'medium', 'high', 'urgent'] as const
 
 export type Priority = (typeof priorities)[number]
 
+export interface Subtask {
+  id:      string
+  title:   string
+  isDone:  boolean
+}
+
 export interface Card {
   id:           string
   title:        string
@@ -9,6 +15,7 @@ export interface Card {
   priority:     Priority | null
   dueDate:      string | null
   createdAt:    string
+  subtasks:     Subtask[]
 }
 
 export interface Column {
@@ -23,6 +30,8 @@ export interface Column {
 export type NewCardDetails = Pick<Card, 'priority' | 'dueDate'>
 
 export type CardChanges = Partial<Pick<Card, 'title' | 'description' | 'priority' | 'dueDate'>>
+
+export type SubtaskChanges = Partial<Pick<Subtask, 'title' | 'isDone'>>
 
 export type ColumnChanges = Partial<Pick<Column, 'title' | 'isDone' | 'isInProgress' | 'isCollapsed'>>
 

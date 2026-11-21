@@ -54,3 +54,10 @@ export const cardChangesSchema = z.object({
   priority:     priority.optional(),
   dueDate:      dueDate.optional(),
 })
+
+export const newSubtaskSchema = z.object({ id, cardId: id, title })
+
+export const subtaskChangesSchema = z.object({
+  title:   title.optional(),
+  isDone:  z.boolean().optional(),
+})

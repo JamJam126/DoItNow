@@ -104,6 +104,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', closeOnEscape))
         </section>
 
         <CardDescription v-model="description" />
+
+        <CardSubtasks :card="card" />
       </div>
 
       <footer class="flex h-14 shrink-0 items-center justify-between border-t pr-3 pl-6">

@@ -1,4 +1,4 @@
-import type { Board, Card, CardChanges, Column, ColumnChanges, NewCardDetails } from '#shared/types/board'
+import type { Board, Card, CardChanges, Column, ColumnChanges, NewCardDetails, Subtask, SubtaskChanges } from '#shared/types/board'
 
 type Status = 'loading' | 'ready' | 'not-found' | 'error'
 type ColumnRole = 'isDone' | 'isInProgress'
@@ -91,6 +91,7 @@ function addCard(columnId: string, title: string, details = noDetails) {
     description:  '',
     ...details,
     createdAt:    new Date().toISOString(),
+    subtasks:     [],
   }
 
   findColumn(columnId)?.cards.push(card)
@@ -158,6 +159,46 @@ function setCards(columnId: string, cards: Card[]) {
 
   const cardIds = idsOf(cards)
   save(() => boardApi.saveCardOrder(columnId, cardIds))
+}
+
+function findSubtask(cardId: string, subtaskId: string) {
+  return findCard(cardId)?.card.subtasks.find((subtask) => subtask.id === subtaskId)
+}
+
+function addSubtask(cardId: string, title: string) {
+  const found = findCard(cardId)
+  if (!found) return
+
+  const subtask: Subtask = { id: newId(), title, isDone: false }
+
+  found.card.subtasks.push(subtask)
+  save(() => boardApi.addSubtask(subtask.id, cardId, title))
+}
+
+function updateSubtask(cardId: string, subtaskId: string, changes: SubtaskChanges) {
+  const subtask = findSubtask(cardId, subtaskId)
+  if (!subtask || !hasChanges(subtask, changes)) return
+
+  Object.assign(subtask, changes)
+  save(() => boardApi.updateSubtask(subtaskId, changes))
+}
+
+function deleteSubtask(cardId: string, subtaskId: string) {
+  const found = findCard(cardId)
+  if (!found) return
+
+  found.card.subtasks = found.card.subtasks.filter((subtask) => subtask.id !== subtaskId)
+  save(() => boardApi.deleteSubtask(subtaskId))
+}
+
+function setSubtasks(cardId: string, subtasks: Subtask[]) {
+  const found = findCard(cardId)
+  if (!found) return
+
+  found.card.subtasks = subtasks
+
+  const subtaskIds = idsOf(subtasks)
+  save(() => boardApi.saveSubtaskOrder(cardId, subtaskIds))
 }
 
 function setColumns(columns: Column[]) {
@@ -236,6 +277,10 @@ export function useBoard() {
     placeCard,
     placeCardNextTo,
     setCards,
+    addSubtask,
+    updateSubtask,
+    deleteSubtask,
+    setSubtasks,
     setColumns,
     addColumn,
     renameColumn,

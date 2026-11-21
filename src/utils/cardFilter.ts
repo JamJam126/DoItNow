@@ -33,7 +33,8 @@ function matchesDue(card: Card, column: Column, due: DueFilter) {
 
 export function matchesFilter(card: Card, column: Column, filter: TableFilter) {
   const search = filter.search.trim().toLowerCase()
-  const text = `${card.title} ${card.description}`.toLowerCase()
+  const subtaskTitles = card.subtasks.map((subtask) => subtask.title).join(' ')
+  const text = `${card.title} ${card.description} ${subtaskTitles}`.toLowerCase()
 
   if (search && !text.includes(search)) return false
   if (filter.priorities.length && !filter.priorities.includes(card.priority ?? 'none')) return false

@@ -68,6 +68,7 @@
   --color-error: var(--error);
   --color-shadow: var(--shadow);
   --color-backdrop: var(--backdrop);
+  --color-connector: color-mix(in srgb, var(--text-sub) 30%, var(--primary));
 
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
@@ -113,6 +114,11 @@
   ::-webkit-scrollbar-thumb:hover {
     background: var(--scrollbar-hover) padding-box;
   }
+}
+
+html:has(.sortable-fallback) {
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .sortable-ghost {

@@ -1,4 +1,4 @@
-import type { Board, BoardSummary, Card } from '#shared/types/board'
+import type { Board, BoardSummary, Card, Subtask } from '#shared/types/board'
 
 export async function readBoards(userId: string): Promise<BoardSummary[]> {
   const sql = useDb()
@@ -32,7 +32,7 @@ export async function readBoards(userId: string): Promise<BoardSummary[]> {
 export async function readBoard(boardId: string, userId: string): Promise<Board | undefined> {
   const sql = useDb()
 
-  const [boards = [], columns = [], cards = []] = await sql.transaction([
+  const [boards = [], columns = [], cards = [], subtasks = []] = await sql.transaction([
     sql`select id, name from boards where id = ${boardId} and owner_id = ${userId}`,
     sql`
       select id, title, is_done, is_in_progress, is_collapsed
@@ -48,6 +48,14 @@ export async function readBoard(boardId: string, userId: string): Promise<Board 
       join columns on columns.id = cards.column_id
       where columns.board_id = ${boardId}
       order by cards.position
+    `,
+    sql`
+      select subtasks.id, subtasks.card_id, subtasks.title, subtasks.is_done
+      from subtasks
+      join cards on cards.id = subtasks.card_id
+      join columns on columns.id = cards.column_id
+      where columns.board_id = ${boardId}
+      order by subtasks.position
     `,
   ])
 
@@ -72,6 +80,13 @@ export async function readBoard(boardId: string, userId: string): Promise<Board 
           priority:     card.priority,
           dueDate:      card.due_date,
           createdAt:    new Date(card.created_at).toISOString(),
+          subtasks:     subtasks
+            .filter((subtask) => subtask.card_id === card.id)
+            .map((subtask): Subtask => ({
+              id:      subtask.id,
+              title:   subtask.title,
+              isDone:  subtask.is_done,
+            })),
         })),
     })),
   }

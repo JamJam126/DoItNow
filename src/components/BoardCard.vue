@@ -8,6 +8,9 @@ const { card, done } = defineProps<{
 
 const dueClass = computed(() => (card.dueDate ? dueStyle[dueStateOf(card.dueDate, done)] : ''))
 
+const doneSubtasks = computed(() => card.subtasks.filter((subtask) => subtask.isDone).length)
+const allSubtasksDone = computed(() => card.subtasks.length > 0 && doneSubtasks.value === card.subtasks.length)
+
 defineEmits<{ open: [] }>()
 </script>
 
@@ -24,7 +27,10 @@ defineEmits<{ open: [] }>()
       {{ card.description }}
     </span>
 
-    <span v-if="card.priority || card.dueDate" class="mt-1 flex flex-wrap items-center gap-2 font-mono text-[11px]">
+    <span
+      v-if="card.priority || card.dueDate || card.subtasks.length"
+      class="mt-1 flex flex-wrap items-center gap-2 font-mono text-[11px]"
+    >
       <span v-if="card.priority" class="rounded border px-1.5 capitalize" :class="priorityStyle[card.priority]">
         {{ card.priority }}
       </span>
@@ -35,6 +41,14 @@ defineEmits<{ open: [] }>()
           <path d="M16 3v4M8 3v4M3 10h18" />
         </svg>
         {{ formatDueDate(card.dueDate) }}
+      </span>
+      <span
+        v-if="card.subtasks.length"
+        class="flex items-center gap-1"
+        :class="allSubtasksDone ? 'text-success' : 'text-text-sub'"
+      >
+        <SubtaskIcon class="size-3" />
+        {{ doneSubtasks }}/{{ card.subtasks.length }}
       </span>
     </span>
   </button>

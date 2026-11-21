@@ -1,4 +1,4 @@
-import type { Board, BoardSummary, CardChanges, ColumnChanges, NewCardDetails } from '#shared/types/board'
+import type { Board, BoardSummary, CardChanges, ColumnChanges, NewCardDetails, SubtaskChanges } from '#shared/types/board'
 
 export const boardApi = {
   listBoards() {
@@ -51,5 +51,21 @@ export const boardApi = {
 
   deleteCard(id: string) {
     return $fetch(`/api/cards/${id}`, { method: 'DELETE' })
+  },
+
+  saveSubtaskOrder(cardId: string, subtaskIds: string[]) {
+    return $fetch(`/api/cards/${cardId}/subtasks`, { method: 'PUT', body: { ids: subtaskIds } })
+  },
+
+  addSubtask(id: string, cardId: string, title: string) {
+    return $fetch('/api/subtasks', { method: 'POST', body: { id, cardId, title } })
+  },
+
+  updateSubtask(id: string, changes: SubtaskChanges) {
+    return $fetch(`/api/subtasks/${id}`, { method: 'PATCH', body: changes })
+  },
+
+  deleteSubtask(id: string) {
+    return $fetch(`/api/subtasks/${id}`, { method: 'DELETE' })
   },
 }

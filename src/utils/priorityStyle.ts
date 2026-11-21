@@ -6,3 +6,10 @@ export const priorityStyle: Record<Priority, string> = {
   high:    'border-warning/40 text-warning',
   urgent:  'border-error/40 text-error',
 }
+
+export const priorityTextStyle: Record<Priority, string> = {
+  low:     'text-text-sub/70',
+  medium:  'text-text-sub',
+  high:    'text-warning',
+  urgent:  'text-error',
+}

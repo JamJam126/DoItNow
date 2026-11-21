@@ -8,27 +8,16 @@ const { field, card, column, inline = false } = defineProps<{
   column:   Column
   inline?:  boolean
 }>()
-
-const status = computed(() => statusOf(column))
 </script>
 
 <template>
-  <span v-if="field === 'status'" class="inline-flex items-center gap-1.5" :class="statusStyle[status]">
-    <StatusIcon :status="status" />
-    {{ statusLabel[status].toLowerCase() }}
-  </span>
-
-  <span
-    v-else-if="field === 'priority' && card.priority"
-    class="rounded border px-1.5 capitalize"
-    :class="priorityStyle[card.priority]"
-  >
-    {{ card.priority }}
+  <span v-if="field === 'description' && card.description" class="block max-w-52 truncate text-sm text-text-sub">
+    {{ card.description }}
   </span>
 
   <span
     v-else-if="field === 'due' && card.dueDate"
-    class="inline-flex items-center gap-1"
+    class="inline-flex items-center gap-1 font-mono text-xs"
     :class="dueStyle[dueStateOf(card.dueDate, column.isDone)]"
   >
     <svg v-if="inline" viewBox="0 0 24 24" class="size-3" fill="none" stroke="currentColor" stroke-width="2"
@@ -39,11 +28,20 @@ const status = computed(() => statusOf(column))
     {{ formatDueDate(card.dueDate) }}
   </span>
 
-  <span v-else-if="field === 'created'" class="text-text-sub">
-    {{ inline ? 'created ' : '' }}{{ formatShortDate(new Date(card.createdAt)) }}
+  <span
+    v-else-if="field === 'priority' && card.priority"
+    class="inline-flex items-center gap-1.5 font-mono text-xs capitalize"
+    :class="priorityTextStyle[card.priority]"
+  >
+    <svg viewBox="0 0 24 24" class="size-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 21V4" />
+      <path d="M5 4h12l-2.5 4L17 12H5z" fill="currentColor" />
+    </svg>
+    {{ card.priority }}
   </span>
 
-  <span v-else-if="field === 'description' && card.description" class="block max-w-64 truncate text-text-sub">
-    {{ card.description }}
+  <span v-else-if="field === 'created'" class="font-mono text-xs text-text-sub">
+    {{ inline ? 'created ' : '' }}{{ formatShortDate(new Date(card.createdAt)) }}
   </span>
 </template>

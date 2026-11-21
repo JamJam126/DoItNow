@@ -14,6 +14,10 @@ export const passwordChangeSchema = z.object({
   newPassword:      z.string().min(10).max(200),
 })
 
+export const feedbackSchema = z.object({
+  message:  z.string().trim().min(1).max(1000),
+})
+
 export const idParamSchema = z.object({ id })
 
 export const idListSchema = z.object({ ids: z.array(id) })

@@ -125,6 +125,31 @@ function moveCard(cardId: string, columnId: string) {
   save(() => boardApi.saveCardOrder(columnId, cardIds))
 }
 
+function placeCard(cardId: string, columnId: string, index: number) {
+  const found = findCard(cardId)
+  const target = findColumn(columnId)
+  if (!found || !target) return
+
+  found.column.cards = found.column.cards.filter((card) => card.id !== cardId)
+
+  const cards = target.cards.filter((card) => card.id !== cardId)
+  cards.splice(index, 0, found.card)
+  target.cards = cards
+
+  const cardIds = idsOf(cards)
+  save(() => boardApi.saveCardOrder(columnId, cardIds))
+}
+
+function placeCardNextTo(cardId: string, neighborId: string, side: 'before' | 'after') {
+  const neighbor = findCard(neighborId)
+  if (!neighbor || cardId === neighborId) return
+
+  const others = neighbor.column.cards.filter((card) => card.id !== cardId)
+  const neighborIndex = others.findIndex((card) => card.id === neighborId)
+
+  placeCard(cardId, neighbor.column.id, side === 'after' ? neighborIndex + 1 : neighborIndex)
+}
+
 function setCards(columnId: string, cards: Card[]) {
   const column = findColumn(columnId)
   if (!column) return
@@ -208,6 +233,8 @@ export function useBoard() {
     updateCard,
     deleteCard,
     moveCard,
+    placeCard,
+    placeCardNextTo,
     setCards,
     setColumns,
     addColumn,

@@ -22,6 +22,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     databaseUrl: '',
+    telegramBotToken: '',
+    telegramChatId: '',
     session: {
       maxAge: 60 * 60 * 24 * 30,
     },

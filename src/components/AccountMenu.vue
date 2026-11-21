@@ -52,6 +52,14 @@ async function logOut() {
         <div class="my-1 border-t" />
 
         <NuxtLink
+          to="/feedback"
+          class="rounded px-2 py-1.5 text-sm text-text-sub transition-colors hover:bg-hover hover:text-text"
+          @click="close"
+        >
+          Send feedback
+        </NuxtLink>
+
+        <NuxtLink
           to="/account"
           class="rounded px-2 py-1.5 text-sm text-text-sub transition-colors hover:bg-hover hover:text-text"
           @click="close"

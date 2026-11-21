@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { priorities, type Priority } from '#shared/types/board'
 
+const { compact = false, label = 'Priority' } = defineProps<{
+  compact?:  boolean
+  label?:    string
+}>()
+
 const priority = defineModel<Priority | null>({ required: true })
 const emit = defineEmits<{ picked: [] }>()
 
@@ -14,12 +19,32 @@ function pick(option: Priority | null) {
 </script>
 
 <template>
-  <div class="relative" @keydown.esc.stop="isOpen = false">
+  <div class="relative" @click.stop @keydown.esc.stop="isOpen = false">
     <button
+      v-if="compact"
       type="button"
       aria-haspopup="listbox"
       :aria-expanded="isOpen"
-      aria-label="Priority"
+      :aria-label="label"
+      class="-mx-1.5 flex h-7 max-w-full cursor-pointer items-center gap-1.5 rounded px-1.5 font-mono text-xs
+             capitalize transition-colors hover:bg-hover"
+      :class="priority ? priorityTextStyle[priority] : 'text-text-sub/30 hover:text-text-sub'"
+      @click="isOpen = !isOpen"
+    >
+      <svg v-if="priority" viewBox="0 0 24 24" class="size-3.5 shrink-0" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 21V4" />
+        <path d="M5 4h12l-2.5 4L17 12H5z" fill="currentColor" />
+      </svg>
+      {{ priority ?? '—' }}
+    </button>
+
+    <button
+      v-else
+      type="button"
+      aria-haspopup="listbox"
+      :aria-expanded="isOpen"
+      :aria-label="label"
       class="flex h-9 cursor-pointer items-center gap-1.5 rounded-md border px-2.5 font-mono text-xs
              transition-colors hover:bg-hover"
       :class="priority ? 'text-text' : 'text-text-sub/60 hover:text-text'"

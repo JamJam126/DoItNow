@@ -1,6 +1,6 @@
 import type { Board, BoardSummary, Card } from '#shared/types/board'
 
-export async function readBoards(): Promise<BoardSummary[]> {
+export async function readBoards(userId: string): Promise<BoardSummary[]> {
   const sql = useDb()
 
   const rows = await sql`
@@ -13,6 +13,7 @@ export async function readBoards(): Promise<BoardSummary[]> {
     from boards
     left join columns on columns.board_id = boards.id
     left join cards on cards.column_id = columns.id
+    where boards.owner_id = ${userId}
     group by boards.id
     order by boards.created_at
   `
@@ -25,11 +26,11 @@ export async function readBoards(): Promise<BoardSummary[]> {
   }))
 }
 
-export async function readBoard(boardId: string): Promise<Board | undefined> {
+export async function readBoard(boardId: string, userId: string): Promise<Board | undefined> {
   const sql = useDb()
 
   const [boards = [], columns = [], cards = []] = await sql.transaction([
-    sql`select id, name from boards where id = ${boardId}`,
+    sql`select id, name from boards where id = ${boardId} and owner_id = ${userId}`,
     sql`
       select id, title, is_done, is_collapsed
       from columns

@@ -1,16 +1,18 @@
-const wrongPasswordDelay = 500
+const failedLoginDelay = 500
+const unusedHash = 'f'.repeat(32) + ':' + 'f'.repeat(128)
 
 export default defineEventHandler(async (event) => {
-  const { password } = await readValidatedBody(event, loginSchema.parse)
-  const { loginPasswordHash } = useRuntimeConfig()
+  const { username, password } = await readValidatedBody(event, loginSchema.parse)
+  const sql = useDb()
 
-  if (!loginPasswordHash) throw new Error('NUXT_LOGIN_PASSWORD_HASH is not set.')
+  const [user] = await sql`select id, username, password_hash from users where username = ${username}`
+  const isCorrect = await isCorrectPassword(password, user?.password_hash ?? unusedHash)
 
-  if (!(await isCorrectPassword(password, loginPasswordHash))) {
-    await new Promise((resolve) => setTimeout(resolve, wrongPasswordDelay))
-    throw createError({ statusCode: 401, statusMessage: 'Wrong password' })
+  if (!user || !isCorrect) {
+    await new Promise((resolve) => setTimeout(resolve, failedLoginDelay))
+    throw createError({ statusCode: 401, statusMessage: 'Wrong username or password' })
   }
 
-  await setUserSession(event, { user: { name: 'owner' } })
+  await setUserSession(event, { user: { id: user.id, username: user.username } })
   return sendNoContent(event)
 })

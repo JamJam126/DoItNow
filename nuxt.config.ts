@@ -13,7 +13,6 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     databaseUrl: '',
-    loginPasswordHash: '',
     session: {
       maxAge: 60 * 60 * 24 * 30,
     },
@@ -26,7 +25,10 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: 'DoItNow',
+      meta: [{ name: 'theme-color', content: '#0a0a0a' }],
       link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         {

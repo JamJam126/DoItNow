@@ -23,7 +23,7 @@ const sizeClasses: Record<Size, string> = {
 <template>
   <button
     type="button"
-    class="inline-flex items-center justify-center gap-1.5 rounded-md font-medium
+    class="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-md font-medium
            transition-colors
            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-text-sub
            disabled:pointer-events-none disabled:opacity-50"

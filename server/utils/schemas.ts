@@ -3,7 +3,15 @@ import { z } from 'zod'
 const id = z.string().min(1).max(100)
 const title = z.string().trim().min(1).max(500)
 
-export const loginSchema = z.object({ password: z.string().min(1).max(200) })
+export const loginSchema = z.object({
+  username:  z.string().trim().toLowerCase().min(1).max(32),
+  password:  z.string().min(1).max(200),
+})
+
+export const passwordChangeSchema = z.object({
+  currentPassword:  z.string().min(1).max(200),
+  newPassword:      z.string().min(10).max(200),
+})
 
 export const idParamSchema = z.object({ id })
 

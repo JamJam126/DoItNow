@@ -1,8 +1,18 @@
+create table if not exists users (
+  id             text primary key,
+  username       text not null unique,
+  password_hash  text not null,
+  created_at     timestamptz not null default now()
+);
+
 create table if not exists boards (
   id          text primary key,
+  owner_id    text references users (id) on delete cascade,
   name        text not null,
   created_at  timestamptz not null default now()
 );
+
+alter table boards add column if not exists owner_id text references users (id) on delete cascade;
 
 create table if not exists columns (
   id            text primary key,
@@ -22,5 +32,6 @@ create table if not exists cards (
   created_at   timestamptz not null default now()
 );
 
+create index if not exists boards_owner_id_idx on boards (owner_id);
 create index if not exists columns_board_id_idx on columns (board_id);
 create index if not exists cards_column_id_idx on cards (column_id);

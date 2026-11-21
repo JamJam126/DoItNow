@@ -7,5 +7,10 @@ export default defineEventHandler(async (event) => {
   const isPublic = publicApiRoutes.includes(pathname)
   if (!isApi || isPublic) return
 
-  await requireUserSession(event)
+  const { user } = await requireUserSession(event)
+
+  if (!user.id) {
+    await clearUserSession(event)
+    throw createError({ statusCode: 401, statusMessage: 'Please log in again' })
+  }
 })

@@ -9,7 +9,7 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "db:setup": "node --env-file=.env scripts/setupDatabase.mjs",
-    "set-password": "node scripts/setPassword.mjs"
+    "user": "node --env-file=.env scripts/users.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",

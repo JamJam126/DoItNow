@@ -8,10 +8,11 @@ const starterColumns = [
 
 export default defineEventHandler(async (event) => {
   const { id, name } = await readValidatedBody(event, newBoardSchema.parse)
+  const userId = await currentUserId(event)
   const sql = useDb()
 
   await sql.transaction([
-    sql`insert into boards (id, name) values (${id}, ${name})`,
+    sql`insert into boards (id, owner_id, name) values (${id}, ${userId}, ${name})`,
     ...starterColumns.map((column, position) => sql`
       insert into columns (id, board_id, title, position, is_done)
       values (${randomUUID()}, ${id}, ${column.title}, ${position}, ${column.isDone})

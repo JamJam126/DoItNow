@@ -1,5 +1,14 @@
 import tailwindcss from '@tailwindcss/vite'
 
+const themeScript = `
+  try {
+    const saved = localStorage.getItem('doitnow:theme')
+    const prefersLight = matchMedia('(prefers-color-scheme: light)').matches
+    const isLight = saved === 'light' || (saved === 'system' && prefersLight)
+    document.documentElement.dataset.theme = isLight ? 'light' : 'dark'
+  } catch {}
+`
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
@@ -26,6 +35,7 @@ export default defineNuxtConfig({
     head: {
       title: 'DoItNow',
       meta: [{ name: 'theme-color', content: '#0a0a0a' }],
+      script: [{ innerHTML: themeScript, tagPosition: 'head' }],
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
         { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },

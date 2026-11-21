@@ -36,7 +36,7 @@ function moveTo(columnId: string) {
       <ul
         role="listbox"
         class="absolute top-full left-0 z-20 mt-1 flex w-48 flex-col rounded-md border bg-primary p-1
-               font-sans shadow-lg shadow-black/40 transition starting:-translate-y-1 starting:opacity-0"
+               font-sans shadow-lg shadow-shadow transition starting:-translate-y-1 starting:opacity-0"
       >
         <li v-for="option in board.columns" :key="option.id">
           <button

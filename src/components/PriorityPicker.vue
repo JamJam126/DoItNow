@@ -38,7 +38,7 @@ function pick(option: Priority | null) {
       <ul
         role="listbox"
         class="absolute top-full right-0 z-20 mt-1 flex w-40 flex-col rounded-md border bg-primary p-1
-               shadow-lg shadow-black/40 transition starting:-translate-y-1 starting:opacity-0"
+               shadow-lg shadow-shadow transition starting:-translate-y-1 starting:opacity-0"
       >
         <li>
           <button

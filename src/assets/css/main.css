@@ -13,6 +13,32 @@
   --warning: #fbbf24;
   --info: #60a5fa;
   --error: #f87171;
+
+  --shadow: rgb(0 0 0 / 0.4);
+  --backdrop: rgb(0 0 0 / 0.6);
+  --drag-shadow: rgb(0 0 0 / 0.5);
+
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --primary: #ffffff;
+  --hover: #f4f4f4;
+  --focus: #ececec;
+  --border: #e3e3e3;
+  --text: #0a0a0a;
+  --text-sub: #5e5e5e;
+
+  --success: #16a34a;
+  --warning: #c2710c;
+  --info: #2563eb;
+  --error: #dc2626;
+
+  --shadow: rgb(0 0 0 / 0.08);
+  --backdrop: rgb(0 0 0 / 0.25);
+  --drag-shadow: rgb(0 0 0 / 0.15);
+
+  color-scheme: light;
 }
 
 @theme inline {
@@ -26,6 +52,8 @@
   --color-warning: var(--warning);
   --color-info: var(--info);
   --color-error: var(--error);
+  --color-shadow: var(--shadow);
+  --color-backdrop: var(--backdrop);
 
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
@@ -36,10 +64,6 @@
   ::before,
   ::after {
     border-color: var(--border);
-  }
-
-  html {
-    color-scheme: dark;
   }
 
   body {
@@ -60,6 +84,6 @@
 
 .sortable-drag {
   rotate: 2deg;
-  box-shadow: 0 12px 32px rgb(0 0 0 / 0.5);
+  box-shadow: 0 12px 32px var(--drag-shadow);
   cursor: grabbing;
 }

@@ -41,9 +41,13 @@ async function logOut() {
 
       <nav
         class="absolute top-full right-0 z-20 mt-1 flex w-52 flex-col rounded-md border bg-primary p-1
-               shadow-lg shadow-black/40 transition starting:-translate-y-1 starting:opacity-0"
+               shadow-lg shadow-shadow transition starting:-translate-y-1 starting:opacity-0"
       >
         <p class="truncate px-2 py-1.5 font-mono text-xs text-text-sub/60">{{ user?.username }}</p>
+
+        <div class="my-1 border-t" />
+
+        <ThemeSwitch />
 
         <div class="my-1 border-t" />
 

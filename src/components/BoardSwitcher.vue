@@ -50,7 +50,7 @@ function close() {
 
       <nav
         class="absolute top-full left-0 z-20 mt-1 flex w-56 flex-col rounded-md border bg-primary p-1
-               shadow-lg shadow-black/40 transition starting:-translate-y-1 starting:opacity-0"
+               shadow-lg shadow-shadow transition starting:-translate-y-1 starting:opacity-0"
       >
         <div v-if="isLoading" aria-busy="true" aria-label="Loading boards">
           <div v-for="width in ['w-32', 'w-24', 'w-28']" :key="width" class="px-2 py-2.5">

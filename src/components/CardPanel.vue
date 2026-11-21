@@ -62,7 +62,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', closeOnEscape))
 <template>
   <div class="fixed inset-0 z-50">
     <div
-      class="absolute inset-0 bg-black/60 transition-opacity duration-200 starting:opacity-0"
+      class="absolute inset-0 bg-backdrop transition-opacity duration-200 starting:opacity-0"
       :style="backdropStyle"
       @click="emit('close')"
     />
